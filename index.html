@@ -29,7 +29,7 @@
       --border: #2a3f52;
       --accent: #4da8c7;
 
-      /* Chloride bins: yellow → purple (colorblind-safe) */
+      /* Chloride bins: blue-red  */
       --c0: #4F73B8;
       /*   0–10  mg/L  */
       --c1: #7D86A8;
@@ -489,11 +489,11 @@
     // Color bins
     // -------------------------------------------------------------------------
     const BINS = [
-      { max: 10, color: '#fde725', label: '0–10' },
-      { max: 50, color: '#8fd644', label: '10–50' },
-      { max: 100, color: '#35b779', label: '50–100' },
-      { max: 500, color: '#31688e', label: '100–500' },
-      { max: Infinity, color: '#440154', label: '500+' },
+      { max: 10, color: '#4F73B8', label: '0–10' },
+      { max: 50, color: '#7D86A8', label: '10–50' },
+      { max: 100, color: '#AD7A7F', label: '50–100' },
+      { max: 500, color: '#D45A45', label: '100–500' },
+      { max: Infinity, color: '#9A3E2D', label: '500+' },
     ];
 
     function binColor(val) {

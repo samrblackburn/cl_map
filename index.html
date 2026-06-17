@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,26 +16,40 @@
        data labels, yellow→purple as the single bold variable             */
     /* ------------------------------------------------------------------ */
     :root {
-      --bg:        #0f1923;
-      --panel:     #16222e;
-      --panel-b:   #1d2f3f;
-      --border:    #2a3f52;
-      --text:      #c9d8e6;
-      --text-dim:  #6a8ba4;
-      --accent:    #4da8c7;
+      --bg: #ffffff;
+      /* White background */
+      --panel: #f4f4f4;
+      /* Light gray panel */
+      --panel-b: #e0e0e0;
+      /* Slightly darker gray border */
+      --text: #333333;
+      /* Dark text for readability */
+      --text-dim: #777777;
+      /* Gray text for metadata */
+      --border: #2a3f52;
+      --accent: #4da8c7;
 
       /* Chloride bins: yellow → purple (colorblind-safe) */
-      --c0:  #fde725;   /*   0–10  mg/L  — bright yellow  */
-      --c1:  #8fd644;   /*  10–50  mg/L  — yellow-green   */
-      --c2:  #35b779;   /*  50–100 mg/L  — teal-green     */
-      --c3:  #31688e;   /* 100–500 mg/L  — slate blue     */
-      --c4:  #440154;   /* 500+    mg/L  — deep purple    */
+      --c0: #fde725;
+      /*   0–10  mg/L  — bright yellow  */
+      --c1: #8fd644;
+      /*  10–50  mg/L  — yellow-green   */
+      --c2: #35b779;
+      /*  50–100 mg/L  — teal-green     */
+      --c3: #31688e;
+      /* 100–500 mg/L  — slate blue     */
+      --c4: #440154;
+      /* 500+    mg/L  — deep purple    */
 
       --radius: 4px;
       --mono: 'JetBrains Mono', 'Fira Mono', 'Consolas', monospace;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
@@ -63,12 +78,14 @@
       flex-direction: column;
       gap: 1px;
     }
+
     .header-title h1 {
       font-size: 15px;
       font-weight: 700;
       letter-spacing: 0.02em;
-      color: #e8f4fb;
+      color: var(--accent);
     }
+
     .header-title p {
       font-size: 11px;
       color: var(--text-dim);
@@ -85,6 +102,7 @@
       overflow: hidden;
       flex-shrink: 0;
     }
+
     .toggle-group button {
       padding: 6px 14px;
       font-size: 12px;
@@ -98,10 +116,12 @@
       letter-spacing: 0.04em;
       text-transform: uppercase;
     }
+
     .toggle-group button.active {
       background: var(--accent);
       color: #0f1923;
     }
+
     .toggle-group button:hover:not(.active) {
       background: var(--panel-b);
       color: var(--text);
@@ -115,6 +135,7 @@
       flex-wrap: wrap;
       margin-left: auto;
     }
+
     .legend-label {
       font-size: 10px;
       font-family: var(--mono);
@@ -123,6 +144,7 @@
       letter-spacing: 0.06em;
       margin-right: 4px;
     }
+
     .legend-item {
       display: flex;
       align-items: center;
@@ -132,11 +154,12 @@
       color: var(--text-dim);
       white-space: nowrap;
     }
+
     .legend-dot {
       width: 11px;
       height: 11px;
       border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.15);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       flex-shrink: 0;
     }
 
@@ -158,13 +181,17 @@
       padding: 16px;
       z-index: 800;
       display: none;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
     }
-    #info-panel.visible { display: block; }
+
+    #info-panel.visible {
+      display: block;
+    }
 
     #info-panel .close-btn {
       position: absolute;
-      top: 10px; right: 12px;
+      top: 10px;
+      right: 12px;
       background: none;
       border: none;
       color: var(--text-dim);
@@ -172,16 +199,20 @@
       font-size: 16px;
       line-height: 1;
     }
-    #info-panel .close-btn:hover { color: var(--text); }
+
+    #info-panel .close-btn:hover {
+      color: var(--text);
+    }
 
     #info-panel .site-name {
       font-size: 13px;
       font-weight: 700;
-      color: #e8f4fb;
+      color: var(--accent);
       margin-bottom: 4px;
       padding-right: 20px;
       line-height: 1.3;
     }
+
     #info-panel .site-type {
       font-size: 10px;
       font-family: var(--mono);
@@ -196,15 +227,18 @@
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
+
     .stat-block {
       background: var(--panel-b);
       border: 1px solid var(--border);
       border-radius: 6px;
       padding: 9px 10px;
     }
+
     .stat-block.full-width {
       grid-column: 1 / -1;
     }
+
     .stat-block .stat-label {
       font-size: 9px;
       font-family: var(--mono);
@@ -213,23 +247,27 @@
       letter-spacing: 0.07em;
       margin-bottom: 3px;
     }
+
     .stat-block .stat-value {
       font-size: 18px;
       font-family: var(--mono);
       font-weight: 700;
       line-height: 1;
     }
+
     .stat-block .stat-unit {
       font-size: 10px;
       color: var(--text-dim);
       margin-left: 2px;
     }
+
     .stat-block .stat-date {
       font-size: 10px;
       font-family: var(--mono);
       color: var(--text-dim);
       margin-top: 3px;
     }
+
     .stat-block .stat-n {
       font-size: 11px;
       font-family: var(--mono);
@@ -244,7 +282,7 @@
       font-size: 11px;
       font-family: var(--mono);
       color: var(--text-dim);
-      background: rgba(15,25,35,0.8);
+      /* background: rgba(15, 25, 35, 0.8); */
       padding: 3px 8px;
       border-radius: 4px;
       z-index: 800;
@@ -257,15 +295,20 @@
       color: var(--text) !important;
       border-color: var(--border) !important;
     }
+
     .leaflet-control-zoom a:hover {
       background: var(--panel-b) !important;
     }
+
     .leaflet-control-attribution {
-      background: rgba(15,25,35,0.75) !important;
+      /* background: rgba(15, 25, 35, 0.75) !important; */
       color: var(--text-dim) !important;
       font-size: 10px !important;
     }
-    .leaflet-control-attribution a { color: var(--accent) !important; }
+
+    .leaflet-control-attribution a {
+      color: var(--accent) !important;
+    }
 
     /* Custom tooltip */
     .cl-tooltip {
@@ -275,10 +318,11 @@
       padding: 6px 10px;
       font-size: 12px;
       color: var(--text);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
       white-space: nowrap;
       pointer-events: none;
     }
+
     .cl-tooltip .tip-name {
       font-weight: 700;
       margin-bottom: 2px;
@@ -287,10 +331,12 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     .cl-tooltip .tip-val {
       font-family: var(--mono);
       font-size: 13px;
     }
+
     .cl-tooltip .tip-val span {
       color: var(--text-dim);
       font-size: 10px;
@@ -308,293 +354,329 @@
       z-index: 2000;
       gap: 16px;
     }
+
     #loading .spinner {
-      width: 36px; height: 36px;
+      width: 36px;
+      height: 36px;
       border: 3px solid var(--border);
       border-top-color: var(--accent);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
     #loading p {
       font-family: var(--mono);
       font-size: 13px;
       color: var(--text-dim);
     }
 
-    #loading.hidden { display: none; }
+    #loading.hidden {
+      display: none;
+    }
   </style>
 </head>
+
 <body>
 
-<div id="loading">
-  <div class="spinner"></div>
-  <p>Loading chloride data…</p>
-</div>
-
-<header>
-  <div class="header-title">
-    <h1>Wisconsin Chloride Concentrations</h1>
-    <p>EPA Water Quality Portal · Lakes &amp; Rivers · Units: mg/L</p>
+  <div id="loading">
+    <div class="spinner"></div>
+    <p>Loading chloride data…</p>
   </div>
 
-  <div class="toggle-group">
-    <button class="active" data-mode="recent">Most Recent</button>
-    <button data-mode="mean">Mean</button>
-    <button data-mode="max">Max</button>
+  <header>
+    <div class="header-title">
+      <h1>Wisconsin Chloride Concentrations</h1>
+      <p>EPA Water Quality Portal · Lakes &amp; Rivers · Units: mg/L</p>
+    </div>
+
+    <div class="toggle-group">
+      <button class="active" data-mode="recent">Most Recent</button>
+      <button data-mode="mean">Mean</button>
+      <button data-mode="max">Max</button>
+    </div>
+
+    <div class="legend">
+      <span class="legend-label">Cl⁻ mg/L</span>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:var(--c0)"></div>0–10
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:var(--c1)"></div>10–50
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:var(--c2)"></div>50–100
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:var(--c3)"></div>100–500
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:var(--c4)"></div>500+
+      </div>
+    </div>
+  </header>
+
+  <div id="map"></div>
+
+  <div id="info-panel">
+    <button class="close-btn" onclick="closePanel()">✕</button>
+    <div class="site-name" id="p-name">—</div>
+    <div class="site-type" id="p-type">—</div>
+    <div class="stat-grid">
+      <div class="stat-block full-width">
+        <div class="stat-label">Most Recent Sample</div>
+        <div class="stat-value" id="p-recent">—<span class="stat-unit">mg/L</span></div>
+        <div class="stat-date" id="p-recent-date">—</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-label">Mean</div>
+        <div class="stat-value" id="p-mean">—<span class="stat-unit">mg/L</span></div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-label">Maximum</div>
+        <div class="stat-value" id="p-max">—<span class="stat-unit">mg/L</span></div>
+        <div class="stat-date" id="p-max-date">—</div>
+      </div>
+      <div class="stat-block full-width">
+        <div class="stat-label">Sample Count</div>
+        <div class="stat-n" id="p-n">—</div>
+      </div>
+    </div>
   </div>
 
-  <div class="legend">
-    <span class="legend-label">Cl⁻ mg/L</span>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--c0)"></div>0–10</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--c1)"></div>10–50</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--c2)"></div>50–100</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--c3)"></div>100–500</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--c4)"></div>500+</div>
-  </div>
-</header>
+  <div id="status-bar">Loading…</div>
 
-<div id="map"></div>
+  <script>
+    // -------------------------------------------------------------------------
+    // Map init — centered on Wisconsin
+    // -------------------------------------------------------------------------
+    const map = L.map('map', {
+      center: [44.5, -89.9],
+      zoom: 7,
+      zoomControl: true,
+    }).addControl(L.control.zoom({ position: 'topright' }));
 
-<div id="info-panel">
-  <button class="close-btn" onclick="closePanel()">✕</button>
-  <div class="site-name" id="p-name">—</div>
-  <div class="site-type" id="p-type">—</div>
-  <div class="stat-grid">
-    <div class="stat-block full-width">
-      <div class="stat-label">Most Recent Sample</div>
-      <div class="stat-value" id="p-recent">—<span class="stat-unit">mg/L</span></div>
-      <div class="stat-date" id="p-recent-date">—</div>
-    </div>
-    <div class="stat-block">
-      <div class="stat-label">Mean</div>
-      <div class="stat-value" id="p-mean">—<span class="stat-unit">mg/L</span></div>
-    </div>
-    <div class="stat-block">
-      <div class="stat-label">Maximum</div>
-      <div class="stat-value" id="p-max">—<span class="stat-unit">mg/L</span></div>
-      <div class="stat-date" id="p-max-date">—</div>
-    </div>
-    <div class="stat-block full-width">
-      <div class="stat-label">Sample Count</div>
-      <div class="stat-n" id="p-n">—</div>
-    </div>
-  </div>
-</div>
+    // Remove default zoom (we just re-added it top-right)
+    document.querySelector('.leaflet-top.leaflet-left .leaflet-control-zoom')?.remove();
 
-<div id="status-bar">Loading…</div>
+    // 1. Create a custom pane for labels so they sit above markers but don't block clicks
+    const labelPane = map.createPane('mapLabels');
+    labelPane.style.zIndex = 500;          // Sits above overlayPane (default 400)
+    labelPane.style.pointerEvents = 'none'; // Allows clicks to pass through to markers
 
-<script>
-// -------------------------------------------------------------------------
-// Map init — centered on Wisconsin
-// -------------------------------------------------------------------------
-const map = L.map('map', {
-  center: [44.5, -89.9],
-  zoom: 7,
-  zoomControl: true,
-}).addControl(L.control.zoom({ position: 'topright' }));
+    // 2. Corrected Dark basemap labels layer on top
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+      attribution: '© <a href="https://carto.com/">CARTO</a> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      subdomains: 'abcd',
+      maxZoom: 19,
+      pane: 'mapLabels', // Target our custom pointer-immune pane
+    }).addTo(map);
 
-// Remove default zoom (we just re-added it top-right)
-document.querySelector('.leaflet-top.leaflet-left .leaflet-control-zoom')?.remove();
+    // 3. Corrected Water/terrain layer underneath
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+      attribution: '',
+      subdomains: 'abcd',
+      maxZoom: 19,
+      // Goes into default 'tilePane' automatically (zIndex 200)
+    }).addTo(map);
 
-// Dark basemap from CartoDB
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_matter_only_labels/{z}/{x}/{y}{r}.png', {
-  attribution: '© <a href="https://carto.com/">CARTO</a> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-  subdomains: 'abcd',
-  maxZoom: 19,
-  pane: 'overlayPane',
-  zIndex: 500,
-}).addTo(map);
+    // -------------------------------------------------------------------------
+    // Color bins
+    // -------------------------------------------------------------------------
+    const BINS = [
+      { max: 10, color: '#fde725', label: '0–10' },
+      { max: 50, color: '#8fd644', label: '10–50' },
+      { max: 100, color: '#35b779', label: '50–100' },
+      { max: 500, color: '#31688e', label: '100–500' },
+      { max: Infinity, color: '#440154', label: '500+' },
+    ];
 
-// Water/terrain layer underneath
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_matter_no_labels/{z}/{x}/{y}{r}.png', {
-  attribution: '',
-  subdomains: 'abcd',
-  maxZoom: 19,
-}).addTo(map);
+    function binColor(val) {
+      for (const b of BINS) if (val <= b.max) return b.color;
+      return BINS[BINS.length - 1].color;
+    }
 
-// -------------------------------------------------------------------------
-// Color bins
-// -------------------------------------------------------------------------
-const BINS = [
-  { max: 10,   color: '#fde725', label: '0–10'   },
-  { max: 50,   color: '#8fd644', label: '10–50'  },
-  { max: 100,  color: '#35b779', label: '50–100' },
-  { max: 500,  color: '#31688e', label: '100–500'},
-  { max: Infinity, color: '#440154', label: '500+'},
-];
+    function fmtVal(v) {
+      if (v === null || v === undefined || isNaN(v)) return '—';
+      if (v < 10) return v.toFixed(2);
+      if (v < 100) return v.toFixed(1);
+      return Math.round(v).toLocaleString();
+    }
 
-function binColor(val) {
-  for (const b of BINS) if (val <= b.max) return b.color;
-  return BINS[BINS.length - 1].color;
-}
+    // -------------------------------------------------------------------------
+    // State
+    // -------------------------------------------------------------------------
+    let mode = 'recent';   // 'recent' | 'mean' | 'max'
+    let allSites = [];
+    let markers = [];
+    let currentLayer = null;
 
-function fmtVal(v) {
-  if (v === null || v === undefined || isNaN(v)) return '—';
-  if (v < 10) return v.toFixed(2);
-  if (v < 100) return v.toFixed(1);
-  return Math.round(v).toLocaleString();
-}
+    // Tooltip div
+    const tooltip = document.createElement('div');
+    tooltip.className = 'cl-tooltip';
+    tooltip.style.cssText = 'position:fixed;display:none;z-index:9999';
+    document.body.appendChild(tooltip);
 
-// -------------------------------------------------------------------------
-// State
-// -------------------------------------------------------------------------
-let mode = 'recent';   // 'recent' | 'mean' | 'max'
-let allSites = [];
-let markers = [];
-let currentLayer = null;
+    // -------------------------------------------------------------------------
+    // Build markers
+    // -------------------------------------------------------------------------
+    function modeValue(site) {
+      if (mode === 'recent') return site.recent_val;
+      if (mode === 'mean') return site.mean_val;
+      return site.max_val;
+    }
 
-// Tooltip div
-const tooltip = document.createElement('div');
-tooltip.className = 'cl-tooltip';
-tooltip.style.cssText = 'position:fixed;display:none;z-index:9999';
-document.body.appendChild(tooltip);
+    function modeLabel() {
+      if (mode === 'recent') return 'Most Recent';
+      if (mode === 'mean') return 'Mean';
+      return 'Max';
+    }
 
-// -------------------------------------------------------------------------
-// Build markers
-// -------------------------------------------------------------------------
-function modeValue(site) {
-  if (mode === 'recent') return site.recent_val;
-  if (mode === 'mean')   return site.mean_val;
-  return site.max_val;
-}
+    function buildMarkers() {
+      if (currentLayer) map.removeLayer(currentLayer);
 
-function modeLabel() {
-  if (mode === 'recent') return 'Most Recent';
-  if (mode === 'mean')   return 'Mean';
-  return 'Max';
-}
+      const circleOptions = {
+        weight: 0.8,
+        opacity: 0.85,
+        fillOpacity: 0.82,
+      };
 
-function buildMarkers() {
-  if (currentLayer) map.removeLayer(currentLayer);
+      const layerGroup = L.layerGroup();
 
-  const circleOptions = {
-    weight: 0.8,
-    opacity: 0.85,
-    fillOpacity: 0.82,
-  };
+      allSites.forEach(site => {
+        const val = modeValue(site);
+        if (val === null || val === undefined) return;
 
-  const layerGroup = L.layerGroup();
+        const color = binColor(val);
+        const radius = Math.max(4, Math.min(10, 4 + Math.log10(Math.max(val, 1)) * 1.5));
 
-  allSites.forEach(site => {
-    const val = modeValue(site);
-    if (val === null || val === undefined) return;
+        const m = L.circleMarker([site.lat, site.lon], {
+          ...circleOptions,
+          radius,
+          color: 'rgba(0,0,0,0.4)',
+          fillColor: color,
+        });
 
-    const color = binColor(val);
-    const radius = Math.max(4, Math.min(10, 4 + Math.log10(Math.max(val, 1)) * 1.5));
-
-    const m = L.circleMarker([site.lat, site.lon], {
-      ...circleOptions,
-      radius,
-      color: 'rgba(0,0,0,0.4)',
-      fillColor: color,
-    });
-
-    // Hover
-    m.on('mousemove', e => {
-      tooltip.style.display = 'block';
-      tooltip.style.left = (e.originalEvent.clientX + 12) + 'px';
-      tooltip.style.top  = (e.originalEvent.clientY - 30) + 'px';
-      tooltip.innerHTML = `
+        // Hover
+        m.on('mousemove', e => {
+          tooltip.style.display = 'block';
+          tooltip.style.left = (e.originalEvent.clientX + 12) + 'px';
+          tooltip.style.top = (e.originalEvent.clientY - 30) + 'px';
+          tooltip.innerHTML = `
         <div class="tip-name">${site.name || site.id}</div>
         <div class="tip-val">${fmtVal(val)}<span> mg/L ${modeLabel()}</span></div>
       `;
-    });
-    m.on('mouseout', () => { tooltip.style.display = 'none'; });
+        });
+        m.on('mouseout', () => { tooltip.style.display = 'none'; });
 
-    // Click → detail panel
-    m.on('click', () => openPanel(site));
+        // Click → detail panel
+        m.on('click', (e) => {
+          L.DomEvent.stopPropagation(e); // This is the preferred Leaflet way
+          openPanel(site);
+        });
 
-    layerGroup.addLayer(m);
-  });
+        layerGroup.addLayer(m);
+      });
 
-  layerGroup.addTo(map);
-  currentLayer = layerGroup;
+      layerGroup.addTo(map);
+      currentLayer = layerGroup;
 
-  const n = allSites.length;
-  document.getElementById('status-bar').textContent =
-    `${n.toLocaleString()} sites · ${modeLabel()} chloride · EPA WQP`;
-}
-
-// -------------------------------------------------------------------------
-// Info panel
-// -------------------------------------------------------------------------
-function openPanel(site) {
-  document.getElementById('p-name').textContent = site.name || site.id;
-  document.getElementById('p-type').textContent = site.type || 'Unknown type';
-
-  const rv = fmtVal(site.recent_val);
-  document.getElementById('p-recent').innerHTML = `${rv}<span class="stat-unit"> mg/L</span>`;
-  document.getElementById('p-recent-date').textContent = site.recent_date || '—';
-
-  document.getElementById('p-mean').innerHTML = `${fmtVal(site.mean_val)}<span class="stat-unit"> mg/L</span>`;
-  document.getElementById('p-max').innerHTML  = `${fmtVal(site.max_val)}<span class="stat-unit"> mg/L</span>`;
-  document.getElementById('p-max-date').textContent = site.max_date || '—';
-
-  const sampleText = site.n === 1
-    ? '1 sample'
-    : `${site.n.toLocaleString()} samples`;
-  document.getElementById('p-n').textContent = sampleText;
-
-  document.getElementById('info-panel').classList.add('visible');
-}
-
-function closePanel() {
-  document.getElementById('info-panel').classList.remove('visible');
-}
-
-// -------------------------------------------------------------------------
-// Toggle buttons
-// -------------------------------------------------------------------------
-document.querySelectorAll('.toggle-group button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.toggle-group button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    mode = btn.dataset.mode;
-    buildMarkers();
-  });
-});
-
-// Close panel when clicking map background
-map.on('click', () => closePanel());
-
-// -------------------------------------------------------------------------
-// Load data
-// -------------------------------------------------------------------------
-async function loadData() {
-  try {
-    const resp = await fetch('data/chloride_wi.json');
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const data = await resp.json();
-    allSites = data.sites || [];
-
-    document.getElementById('loading').classList.add('hidden');
-
-    buildMarkers();
-
-    // Show data vintage in status
-    if (data.generated) {
-      const d = new Date(data.generated);
-      const ds = d.toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
-      document.querySelector('header .header-title p').textContent =
-        `EPA Water Quality Portal · Lakes & Rivers · Data as of ${ds} · mg/L`;
+      const n = allSites.length;
+      document.getElementById('status-bar').textContent =
+        `${n.toLocaleString()} sites · ${modeLabel()} chloride · EPA WQP`;
     }
-  } catch (err) {
-    document.getElementById('loading').innerHTML = `
+
+    // -------------------------------------------------------------------------
+    // Info panel
+    // -------------------------------------------------------------------------
+    function openPanel(site) {
+      document.getElementById('p-name').textContent = site.name || site.id;
+      document.getElementById('p-type').textContent = site.type || 'Unknown type';
+
+      const rv = fmtVal(site.recent_val);
+      document.getElementById('p-recent').innerHTML = `${rv}<span class="stat-unit"> mg/L</span>`;
+      document.getElementById('p-recent-date').textContent = site.recent_date || '—';
+
+      document.getElementById('p-mean').innerHTML = `${fmtVal(site.mean_val)}<span class="stat-unit"> mg/L</span>`;
+      document.getElementById('p-max').innerHTML = `${fmtVal(site.max_val)}<span class="stat-unit"> mg/L</span>`;
+      document.getElementById('p-max-date').textContent = site.max_date || '—';
+
+      const sampleText = site.n === 1
+        ? '1 sample'
+        : `${site.n.toLocaleString()} samples`;
+      document.getElementById('p-n').textContent = sampleText;
+
+      document.getElementById('info-panel').classList.add('visible');
+    }
+
+    function closePanel() {
+      document.getElementById('info-panel').classList.remove('visible');
+    }
+
+    // -------------------------------------------------------------------------
+    // Toggle buttons
+    // -------------------------------------------------------------------------
+    document.querySelectorAll('.toggle-group button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.toggle-group button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        mode = btn.dataset.mode;
+        buildMarkers();
+      });
+    });
+
+    // Close panel when clicking map background
+    map.on('click', (e) => {
+      // Check if the click target is the map container itself
+      // (i.e., not a marker or other interactive element)
+      if (e.originalEvent.target.classList.contains('leaflet-container')) {
+        closePanel();
+      }
+    });
+
+    // -------------------------------------------------------------------------
+    // Load data
+    // -------------------------------------------------------------------------
+    async function loadData() {
+      try {
+        const resp = await fetch('data/chloride_wi.json');
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        allSites = data.sites || [];
+
+        document.getElementById('loading').classList.add('hidden');
+
+        buildMarkers();
+
+        // Show data vintage in status
+        if (data.generated) {
+          const d = new Date(data.generated);
+          const ds = d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+          document.querySelector('header .header-title p').textContent =
+            `EPA Water Quality Portal · Lakes & Rivers · Data as of ${ds} · mg/L`;
+        }
+      } catch (err) {
+        document.getElementById('loading').innerHTML = `
       <p style="color:#e07070;font-family:monospace;font-size:13px;text-align:center;padding:20px">
         ⚠ Could not load data/chloride_wi.json<br><br>
         <span style="color:#6a8ba4">Run <code>python fetch_wqp_data.py</code> to generate the data file,<br>
         then serve this directory with a local HTTP server.</span>
       </p>`;
-  }
-}
+      }
+    }
 
-// Hide mouse tooltip on map leave
-map.getContainer().addEventListener('mouseleave', () => {
-  tooltip.style.display = 'none';
-});
+    // Hide mouse tooltip on map leave
+    map.getContainer().addEventListener('mouseleave', () => {
+      tooltip.style.display = 'none';
+    });
 
-loadData();
-</script>
+    loadData();
+  </script>
 </body>
+
 </html>

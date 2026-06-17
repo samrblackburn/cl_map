@@ -36,6 +36,13 @@ PARAMS_BASE = {
     "dataProfile": "resultPhysChem",
     "mimeType": "csv",
     "zip": "no",
+    "siteType": [
+        "Lake, Reservoir, Impoundment",
+        "Stream",
+        "Estuary",
+        "Ocean",
+        "Wetland",
+    ],
 }
 
 OUTPUT_DIR = "data"

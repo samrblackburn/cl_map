@@ -42,6 +42,7 @@ PARAMS_BASE = {
         "Estuary",
         "Ocean",
         "Wetland",
+        "Aggregate surface-water-use",
     ],
 }
 

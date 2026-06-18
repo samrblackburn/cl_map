@@ -402,10 +402,109 @@
     #loading.hidden {
       display: none;
     }
+
+    /* Disclaimer overlay */
+
+    #disclaimer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      /* backdrop-filter: blur(3px); */
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #disclaimer-overlay::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      /* Safari requires the prefix */
+      z-index: -1;
+    }
+
+    #disclaimer-box {
+      background: var(--panel);
+      border: 1px solid var(--panel-b);
+      border-radius: 10px;
+      padding: 28px 32px;
+      max-width: 520px;
+      width: calc(100% - 48px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+    }
+
+    #disclaimer-box h2 {
+      font-size: 13px;
+      font-family: var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      margin: 0 0 14px;
+    }
+
+    #disclaimer-box p {
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text);
+      margin: 0 0 20px;
+    }
+
+    #disclaimer-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    #disclaimer-footer label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-dim);
+      cursor: pointer;
+    }
+
+    #disclaimer-accept {
+      padding: 7px 20px;
+      background: var(--text);
+      color: var(--bg);
+      border: none;
+      border-radius: 5px;
+      font-size: 12px;
+      font-family: var(--mono);
+      cursor: pointer;
+      letter-spacing: 0.04em;
+    }
+
+    #disclaimer-accept:hover {
+      opacity: 0.85;
+    }
   </style>
 </head>
 
 <body>
+
+  <div id="disclaimer-overlay">
+    <div id="disclaimer-box">
+      <h2>Data Disclaimer</h2>
+      <p>Water quality data displayed in this viewer are sourced directly from the EPA Water Quality Portal (WQP), an
+        aggregation of records from multiple federal, state, tribal, and local monitoring programs. These data are
+        presented as retrieved and have not undergone additional quality assurance or quality control (QA/QC) by the
+        developers of this viewer. Users should verify data suitability, metadata, and analytical methods with the
+        original data providers before using these data for research, management, or regulatory decisions.</p>
+      <div id="disclaimer-footer">
+        <label>
+          <input type="checkbox" id="disclaimer-suppress">
+          Don't show again
+        </label>
+        <button id="disclaimer-accept">Accept</button>
+      </div>
+    </div>
+  </div>
 
   <div id="loading">
     <div class="spinner"></div>
@@ -752,6 +851,21 @@
     });
 
     loadData();
+
+    // Disclaimer popup
+    (function () {
+      const overlay = document.getElementById('disclaimer-overlay');
+      if (localStorage.getItem('disclaimer-accepted') === 'true') {
+        overlay.style.display = 'none';
+        return;
+      }
+      document.getElementById('disclaimer-accept').addEventListener('click', () => {
+        if (document.getElementById('disclaimer-suppress').checked) {
+          localStorage.setItem('disclaimer-accepted', 'true');
+        }
+        overlay.style.display = 'none';
+      });
+    })();
   </script>
 </body>
 

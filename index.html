@@ -655,7 +655,7 @@
     // Site type filter — Lake and River/Stream selected by default
     const SITE_TYPE_MAP = {
       'Lake': ['Lake, Reservoir, Impoundment', 'Lake', 'Great Lake'],
-      'River': ['Stream', 'River/Stream', 'River', 'Canal Transport', 'Canal Irrigation', 'Canal Drainage', 'Channelized Stream', 'Ditch'],
+      'River': ['Stream', 'River/Stream', 'River', 'Canal Transport', 'Canal Irrigation', 'Canal Drainage', 'Channelized Stream', 'Ditch', 'Estuary'],
       // 'Estuary': ['Estuary', 'Coastal'],
       'Well': ['Well'],
       'Other': [], // catch-all handled in code
@@ -696,9 +696,9 @@
       if (currentLayer) map.removeLayer(currentLayer);
 
       const circleOptions = {
-        weight: 0.8,
-        opacity: 0.85,
-        fillOpacity: 0.82,
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8,
       };
 
       const layerGroup = L.layerGroup();
@@ -713,12 +713,13 @@
 
         shown++;
         const color = binColor(val);
-        const radius = Math.max(4, Math.min(10, 4 + Math.log10(Math.max(val, 1)) * 1.5));
+        const typeKey = siteTypeKey(site);
+        const radius = (typeKey === 'Well' || typeKey === 'Other') ? 3 : 5;
 
         const m = L.circleMarker([site.lat, site.lon], {
           ...circleOptions,
           radius,
-          color: 'rgba(0,0,0,0.4)',
+          color: 'rgb(0,0,0)',
           fillColor: color,
         });
 

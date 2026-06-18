@@ -5,7 +5,7 @@ Interactive map of chloride concentrations in Wisconsin lakes and rivers, source
 ## Features
 
 - Toggle between **Most Recent**, **Mean**, and **Max** values per site
-- Yellow→Purple color bins (colorblind-friendly): 0–10 / 10–50 / 50–100 / 100–500 / 500+ mg/L
+- Blue -> Red color bins (colorblind-friendly): 0–10 / 10–50 / 50–100 / 100–500 / 500+ mg/L
 - Hover tooltip: site name + current value
 - Click panel: most recent sample date, mean, max, sample count
 - QA/QC samples removed; units harmonized to mg/L

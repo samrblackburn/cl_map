@@ -11,10 +11,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
   <style>
-    /* ------------------------------------------------------------------ */
-    /* Design: scientific / cartographic — dark water base, monospaced
-       data labels, yellow→purple as the single bold variable             */
-    /* ------------------------------------------------------------------ */
     :root {
       --bg: #ffffff;
       /* White background */
@@ -27,18 +23,18 @@
       --text-dim: #777777;
       /* Gray text for metadata */
       --border: #2a3f52;
-      --accent: #4da8c7;
+      --accent: #238F9D;
 
       /* Chloride bins: blue-red  */
-      --c0: #4F73B8;
+      --c0: #4A7BB7;
       /*   0–10  mg/L  */
-      --c1: #7D86A8;
+      --c1: #98CAE1;
       /*  10–50  mg/L  */
-      --c2: #AD7A7F;
+      --c2: #EAECCC;
       /*  50–100 mg/L  */
-      --c3: #D45A45;
+      --c3: #FDB366;
       /* 100–500 mg/L  */
-      --c4: #9A3E2D;
+      --c4: #DD3D2D;
       /* 500+    mg/L  */
 
       --radius: 4px;
@@ -90,6 +86,32 @@
       font-size: 11px;
       color: var(--text-dim);
       font-family: var(--mono);
+    }
+
+    /* ── Toggle groups container ── */
+    .toggle-groups-center {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex: 1;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .toggle-group-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 10px;
+      gap: 3px;
+    }
+
+    .toggle-group-label {
+      font-size: 9px;
+      font-family: var(--mono);
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
 
     /* ── Toggle ── */
@@ -281,8 +303,10 @@
       left: 14px;
       font-size: 11px;
       font-family: var(--mono);
-      color: var(--text-dim);
-      /* background: rgba(15, 25, 35, 0.8); */
+      background: rgba(244, 244, 244, 0.88);
+      backdrop-filter: blur(4px);
+      border: 1px solid var(--panel-b);
+      color: var(--text);
       padding: 3px 8px;
       border-radius: 4px;
       z-index: 800;
@@ -301,7 +325,6 @@
     }
 
     .leaflet-control-attribution {
-      /* background: rgba(15, 25, 35, 0.75) !important; */
       color: var(--text-dim) !important;
       font-size: 10px !important;
     }
@@ -395,10 +418,24 @@
       <p>EPA Water Quality Portal · Lakes &amp; Rivers · Units: mg/L</p>
     </div>
 
-    <div class="toggle-group">
-      <button class="active" data-mode="recent">Most Recent</button>
-      <button data-mode="mean">Mean</button>
-      <button data-mode="max">Max</button>
+    <div class="toggle-groups-center">
+      <div class="toggle-group-wrap">
+        <div class="toggle-group" id="mode-toggle">
+          <button class="active" data-mode="recent">Most Recent</button>
+          <button data-mode="mean">Mean</button>
+          <button data-mode="max">Max</button>
+        </div>
+      </div>
+
+      <div class="toggle-group-wrap">
+        <div class="toggle-group" id="type-toggle">
+          <button class="active" data-type="Lake">Lake</button>
+          <button class="active" data-type="River">River / Stream</button>
+          <!-- <button data-type="Estuary">Estuary</button> -->
+          <button data-type="Well">Well</button>
+          <button data-type="Other">Other</button>
+        </div>
+      </div>
     </div>
 
     <div class="legend">
@@ -489,11 +526,11 @@
     // Color bins
     // -------------------------------------------------------------------------
     const BINS = [
-      { max: 10, color: '#4F73B8', label: '0–10' },
-      { max: 50, color: '#7D86A8', label: '10–50' },
-      { max: 100, color: '#AD7A7F', label: '50–100' },
-      { max: 500, color: '#D45A45', label: '100–500' },
-      { max: Infinity, color: '#9A3E2D', label: '500+' },
+      { max: 10, color: '#4A7BB7', label: '0–10' },
+      { max: 50, color: '#98CAE1', label: '10–50' },
+      { max: 100, color: '#EAECCC', label: '50–100' },
+      { max: 500, color: '#FDB366', label: '100–500' },
+      { max: Infinity, color: '#DD3D2D', label: '500+' },
     ];
 
     function binColor(val) {
@@ -516,6 +553,16 @@
     let markers = [];
     let currentLayer = null;
 
+    // Site type filter — Lake and River/Stream selected by default
+    const SITE_TYPE_MAP = {
+      'Lake': ['Lake, Reservoir, Impoundment', 'Lake', 'Great Lake'],
+      'River': ['Stream', 'River/Stream', 'River', 'Canal Transport', 'Canal Irrigation', 'Canal Drainage', 'Channelized Stream', 'Ditch'],
+      // 'Estuary': ['Estuary', 'Coastal'],
+      'Well': ['Well'],
+      'Other': [], // catch-all handled in code
+    };
+    let selectedTypes = new Set(['Lake', 'River']);
+
     // Tooltip div
     const tooltip = document.createElement('div');
     tooltip.className = 'cl-tooltip';
@@ -537,6 +584,15 @@
       return 'Max';
     }
 
+    function siteTypeKey(site) {
+      const t = (site.type || '').toLowerCase();
+      if (/lake|reservoir|impoundment/i.test(t)) return 'Lake';
+      if (/stream|river|canal|ditch|channelized/i.test(t)) return 'River';
+      if (/estuary|coastal/i.test(t)) return 'Estuary';
+      if (/well/i.test(t)) return 'Well';
+      return 'Other';
+    }
+
     function buildMarkers() {
       if (currentLayer) map.removeLayer(currentLayer);
 
@@ -547,11 +603,16 @@
       };
 
       const layerGroup = L.layerGroup();
+      let shown = 0;
 
       allSites.forEach(site => {
         const val = modeValue(site);
         if (val === null || val === undefined) return;
 
+        // Filter by selected site types
+        if (selectedTypes.size > 0 && !selectedTypes.has(siteTypeKey(site))) return;
+
+        shown++;
         const color = binColor(val);
         const radius = Math.max(4, Math.min(10, 4 + Math.log10(Math.max(val, 1)) * 1.5));
 
@@ -576,7 +637,7 @@
 
         // Click → detail panel
         m.on('click', (e) => {
-          L.DomEvent.stopPropagation(e); // This is the preferred Leaflet way
+          L.DomEvent.stopPropagation(e);
           openPanel(site);
         });
 
@@ -586,9 +647,8 @@
       layerGroup.addTo(map);
       currentLayer = layerGroup;
 
-      const n = allSites.length;
       document.getElementById('status-bar').textContent =
-        `${n.toLocaleString()} sites · ${modeLabel()} chloride · EPA WQP`;
+        `${shown.toLocaleString()} sites`;
     }
 
     // -------------------------------------------------------------------------
@@ -619,13 +679,29 @@
     }
 
     // -------------------------------------------------------------------------
-    // Toggle buttons
-    // -------------------------------------------------------------------------
-    document.querySelectorAll('.toggle-group button').forEach(btn => {
+    // Mode toggle (single-select)
+    document.querySelectorAll('#mode-toggle button').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.toggle-group button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('#mode-toggle button').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         mode = btn.dataset.mode;
+        buildMarkers();
+      });
+    });
+
+    // Site type toggle (multi-select)
+    document.querySelectorAll('#type-toggle button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const t = btn.dataset.type;
+        if (selectedTypes.has(t)) {
+          // Don't allow deselecting the last type
+          if (selectedTypes.size === 1) return;
+          selectedTypes.delete(t);
+          btn.classList.remove('active');
+        } else {
+          selectedTypes.add(t);
+          btn.classList.add('active');
+        }
         buildMarkers();
       });
     });
@@ -658,7 +734,7 @@
           const d = new Date(data.generated);
           const ds = d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
           document.querySelector('header .header-title p').textContent =
-            `EPA Water Quality Portal · Lakes & Rivers · Data as of ${ds} · mg/L`;
+            `EPA Water Quality Portal · Data as of ${ds}`;
         }
       } catch (err) {
         document.getElementById('loading').innerHTML = `

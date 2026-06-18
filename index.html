@@ -529,7 +529,7 @@
       <div class="toggle-group-wrap">
         <div class="toggle-group" id="type-toggle">
           <button class="active" data-type="Lake">Lake</button>
-          <button class="active" data-type="River">River / Stream</button>
+          <button class="active" data-type="River">River/Stream</button>
           <!-- <button data-type="Estuary">Estuary</button> -->
           <button data-type="Well">Well</button>
           <button data-type="Other">Other</button>
@@ -654,7 +654,7 @@
 
     // Site type filter — Lake and River/Stream selected by default
     const SITE_TYPE_MAP = {
-      'Lake': ['Lake, Reservoir, Impoundment', 'Lake', 'Great Lake'],
+      'Lake': ['Lake, Reservoir, Impoundment', 'Lake', 'Great Lake', 'Ocean'],
       'River': ['Stream', 'River/Stream', 'River', 'Canal Transport', 'Canal Irrigation', 'Canal Drainage', 'Channelized Stream', 'Ditch', 'Estuary'],
       // 'Estuary': ['Estuary', 'Coastal'],
       'Well': ['Well'],
@@ -685,9 +685,9 @@
 
     function siteTypeKey(site) {
       const t = (site.type || '').toLowerCase();
-      if (/lake|reservoir|impoundment/i.test(t)) return 'Lake';
-      if (/stream|river|canal|ditch|channelized/i.test(t)) return 'River';
-      if (/estuary|coastal/i.test(t)) return 'Estuary';
+      if (/lake|reservoir|impoundment|ocean/i.test(t)) return 'Lake';
+      if (/stream|river|canal|ditch|channelized|estuary/i.test(t)) return 'River';
+      // if (/estuary|coastal/i.test(t)) return 'Estuary';
       if (/well/i.test(t)) return 'Well';
       return 'Other';
     }
@@ -714,7 +714,7 @@
         shown++;
         const color = binColor(val);
         const typeKey = siteTypeKey(site);
-        const radius = (typeKey === 'Well' || typeKey === 'Other') ? 3 : 5;
+        const radius = (typeKey === 'Well' || typeKey === 'Other') ? 4 : 5;
 
         const m = L.circleMarker([site.lat, site.lon], {
           ...circleOptions,

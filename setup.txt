@@ -1,0 +1,34 @@
+## Setup
+
+### 1. Install dependencies
+
+```bash
+pip install requests pandas
+```
+
+### 2. Fetch data from EPA WQP
+
+```bash
+python fetch_wqp_data.py
+```
+
+This will create `data/chloride_wi.json` (~1–5 MB). Re-run periodically to refresh.
+
+> **Note:** The WQP request may take 1–5 minutes depending on server load.
+
+### 3. Preview locally
+
+```bash
+# Python 3
+python -m http.server 8000
+# then open http://localhost:8000
+```
+
+> ⚠️ Must use a local HTTP server — browsers block `fetch()` on `file://` URLs.
+
+## Deploy to GitHub Pages
+
+1. Push the repo to GitHub (include `index.html`, `data/chloride_wi.json`, `fetch_wqp_data.py`)
+2. Go to **Settings → Pages**
+3. Set source to **Deploy from a branch → main → / (root)**
+4. Your map will be live at `https://<username>.github.io/<repo>/`

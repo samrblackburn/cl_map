@@ -899,6 +899,12 @@
       const container = document.getElementById('p-chart');
       d3.select(container).selectAll('*').remove();
 
+      // Handle bug with axes by deferring measurement if panel isn't loaded
+      const panel = document.getElementById('info-panel');
+      if (panel.clientWidth === 0) {
+        requestAnimationFrame(() => drawTimeSeries(rawSamples));
+        return;
+      }
       const panelWidth = document.getElementById('info-panel').clientWidth;
       const M = { top: 8, right: 10, bottom: 36, left: 44 };
       const W = panelWidth - 32 - M.left - M.right;

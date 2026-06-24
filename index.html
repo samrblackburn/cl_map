@@ -10,6 +10,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
+  <!-- D3 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+
   <style>
     :root {
       --bg: #ffffff;
@@ -24,6 +27,7 @@
       /* Gray text for metadata */
       --border: #2a3f52;
       --accent: #238F9D;
+      --accent-light: #238f9dc4;
 
       /* Chloride bins: blue-red  */
       --c0: #4A7BB7;
@@ -140,7 +144,7 @@
     }
 
     .toggle-group button.active {
-      background: var(--accent);
+      background: var(--accent-light);
       color: #0f1923;
     }
 
@@ -208,6 +212,98 @@
 
     #info-panel.visible {
       display: block;
+      max-height: calc(100dvh - 80px);
+      overflow-y: auto;
+    }
+
+    /* ── Time series chart ── */
+    #p-chart-wrap {
+      margin-top: 14px;
+    }
+
+    #p-chart-wrap .chart-title {
+      font-size: 9px;
+      font-family: var(--mono);
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 6px;
+    }
+
+    #p-chart svg {
+      display: block;
+      width: 100%;
+      overflow: visible;
+    }
+
+    .ts-axis text {
+      font-family: var(--mono);
+      font-size: 9px;
+      fill: var(--text-dim);
+    }
+
+    .ts-axis path,
+    .ts-axis line {
+      stroke: var(--panel-b);
+    }
+
+    .ts-area {
+      fill: var(--accent);
+      opacity: 0.15;
+    }
+
+    .ts-line {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 1.5;
+    }
+
+    .ts-dot {
+      fill: var(--accent);
+      stroke: var(--panel);
+      stroke-width: 1;
+      cursor: pointer;
+      transition: r 0.1s;
+    }
+
+    .ts-dot:hover {
+      r: 4;
+    }
+
+    /* Brush strip */
+    .ts-brush-area {
+      fill: var(--accent);
+      opacity: 0.12;
+    }
+
+    .ts-brush-line {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 1;
+      opacity: 0.6;
+    }
+
+    .brush .selection {
+      fill: var(--accent);
+      fill-opacity: 0.2;
+      stroke: var(--accent);
+      stroke-width: 1;
+    }
+
+    /* Hover tooltip for chart */
+    #chart-tip {
+      position: fixed;
+      display: none;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text);
+      pointer-events: none;
+      z-index: 9999;
+      white-space: nowrap;
     }
 
     #info-panel .close-btn {
@@ -562,7 +658,8 @@
   <div id="info-panel">
     <button class="close-btn" onclick="closePanel()">✕</button>
     <div class="site-name" id="p-name">—</div>
-    <div class="site-type" id="p-type">—</div>
+    <!-- <div class="site-type" id="p-type">—</div> -->
+    <div class="site-type"><span id="p-type"></span> · <span id="p-n"></span></div>
     <div class="stat-grid">
       <div class="stat-block full-width">
         <div class="stat-label">Most Recent Sample</div>
@@ -578,10 +675,12 @@
         <div class="stat-value" id="p-max">—<span class="stat-unit">mg/L</span></div>
         <div class="stat-date" id="p-max-date">—</div>
       </div>
-      <div class="stat-block full-width">
-        <div class="stat-label">Sample Count</div>
-        <div class="stat-n" id="p-n">—</div>
-      </div>
+    </div>
+
+    <!-- Time series chart (shown only for multi-sample sites) -->
+    <div id="p-chart-wrap" style="display:none">
+      <!-- <div class="chart-title">Chloride over time</div> -->
+      <div id="p-chart"></div>
     </div>
   </div>
 
@@ -771,12 +870,194 @@
         : `${site.n.toLocaleString()} samples`;
       document.getElementById('p-n').textContent = sampleText;
 
+      // Chart
+      const chartWrap = document.getElementById('p-chart-wrap');
+      if (site.samples && site.samples.length >= 2) {
+        chartWrap.style.display = 'block';
+        drawTimeSeries(site.samples);
+      } else {
+        chartWrap.style.display = 'none';
+        d3.select('#p-chart').selectAll('*').remove();
+      }
+
       document.getElementById('info-panel').classList.add('visible');
     }
 
     function closePanel() {
       document.getElementById('info-panel').classList.remove('visible');
     }
+    // -------------------------------------------------------------------------
+    // Time series chart (D3)
+    // -------------------------------------------------------------------------
+    (function () {
+      const chartTip = document.createElement('div');
+      chartTip.id = 'chart-tip';
+      document.body.appendChild(chartTip);
+    })();
+
+    function drawTimeSeries(rawSamples) {
+      const container = document.getElementById('p-chart');
+      d3.select(container).selectAll('*').remove();
+
+      const panelWidth = document.getElementById('info-panel').clientWidth;
+      const M = { top: 8, right: 10, bottom: 36, left: 44 };
+      const W = panelWidth - 32 - M.left - M.right;
+      const H = 130;
+
+      const parseDate = d3.timeParse('%Y-%m-%d');
+      const data = rawSamples
+        .map(s => ({ date: parseDate(s.d), v: s.v }))
+        .filter(s => s.date !== null)
+        .sort((a, b) => a.date - b.date);
+
+      if (data.length < 2) return;
+
+      const minDate = data[0].date;
+      const maxDate = data[data.length - 1].date;
+
+      // Add padding to x domain (2% of span on each side)
+      const xSpan = maxDate - minDate;
+      const xPad = xSpan * 0.04;
+      const xDomainMin = new Date(minDate.getTime() - xPad);
+      const xDomainMax = new Date(maxDate.getTime() + xPad);
+
+      const svg = d3.select(container)
+        .append('svg')
+        .attr('width', W + M.left + M.right)
+        .attr('height', H + M.top + M.bottom);
+
+      svg.append('defs').append('clipPath')
+        .attr('id', 'ts-clip')
+        .append('rect')
+        .attr('width', W)
+        .attr('height', H);
+
+      const focus = svg.append('g')
+        .attr('transform', `translate(${M.left},${M.top})`);
+
+      const xFull = d3.scaleTime()
+        .domain([xDomainMin, xDomainMax])
+        .range([0, W]);
+
+      const yMax = d3.max(data, d => d.v);
+      const yMin = d3.min(data, d => d.v);
+      const yPad = (yMax - yMin) * 0.1 || yMax * 0.1;
+      const yScale = d3.scaleLinear()
+        .domain([yMin - yPad, yMax + yPad])
+        .nice()
+        .range([H, 0]);
+
+      let xScale = xFull.copy();
+
+      function xTickFormat(xs) {
+        const [d0, d1] = xs.domain();
+        const spanYears = (d1 - d0) / (1000 * 60 * 60 * 24 * 365.25);
+        return spanYears >= 2
+          ? d3.timeFormat('%Y')
+          : d3.timeFormat('%b\n%Y');
+      }
+
+      function isShortSpan(xs) {
+        const [d0, d1] = xs.domain();
+        const spanYears = (d1 - d0) / (1000 * 60 * 60 * 24 * 365.25);
+        return spanYears < 2;
+      }
+
+      // ── Axes ──
+      const xAxisG = focus.append('g')
+        .attr('class', 'ts-axis')
+        .attr('transform', `translate(0,${H})`);
+
+      const yAxisG = focus.append('g')
+        .attr('class', 'ts-axis');
+
+      function updateAxes(xs) {
+        xAxisG.call(
+          d3.axisBottom(xs)
+            .ticks(4)
+            .tickSizeOuter(0)
+            .tickFormat(xTickFormat(xs))
+        );
+        // Wrap month/year labels onto two lines
+        if (isShortSpan(xs)) {
+          xAxisG.selectAll('.tick text').each(function () {
+            const el = d3.select(this);
+            const full = el.text(); // e.g. "Jan\n2021"
+            const parts = full.split('\n');
+            if (parts.length === 2) {
+              el.text('');
+              el.append('tspan')
+                .attr('x', 0)
+                .attr('dy', '0.8em')
+                .text(parts[0]);
+              el.append('tspan')
+                .attr('x', 0)
+                .attr('dy', '1.1em')
+                .text(parts[1]);
+            }
+          });
+        } else {
+          xAxisG.selectAll('.tick text')
+            .attr('dy', '1em');
+        }
+        yAxisG.call(
+          d3.axisLeft(yScale)
+            .ticks(4)
+            .tickSizeOuter(0)
+            .tickFormat(d => d >= 1000 ? d3.format('.2s')(d) : d)
+        );
+        // Remove domain lines for cleaner look
+        xAxisG.select('.domain').remove();
+        yAxisG.select('.domain').remove();
+      }
+
+      updateAxes(xScale);
+
+      // y-axis unit label
+      focus.append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -H / 2)
+        .attr('y', -M.left + 10)
+        .attr('text-anchor', 'middle')
+        .style('font-family', 'var(--mono)')
+        .style('font-size', '8px')
+        .style('fill', 'var(--text-dim)')
+        .text('mg/L');
+
+      // ── Area + line (clipped) ──
+      const chartArea = focus.append('g')
+        .attr('clip-path', 'url(#ts-clip)');
+
+      const chartTip = document.getElementById('chart-tip');
+      const formatDate = d3.timeFormat('%b %d, %Y');
+
+      const dots = chartArea.selectAll('circle.ts-dot')
+        .data(data)
+        .join('circle')
+        .attr('class', 'ts-dot')
+        .attr('r', 3)
+        .attr('cx', d => xScale(d.date))
+        .attr('cy', d => yScale(d.v));
+
+
+      dots
+        .on('mouseover', function (event, d) {
+          d3.select(this).attr('r', 4.5);
+          chartTip.style.display = 'block';
+          chartTip.style.left = (event.clientX - chartTip.offsetWidth - 10) + 'px';
+          chartTip.style.top = (event.clientY - chartTip.offsetHeight - 10) + 'px';
+          chartTip.textContent = `${formatDate(d.date)}: ${fmtVal(d.v)} mg/L`;
+        })
+        .on('mousemove', function (event) {
+          chartTip.style.left = (event.clientX - chartTip.offsetWidth - 10) + 'px';
+          chartTip.style.top = (event.clientY - chartTip.offsetHeight - 10) + 'px';
+        })
+        .on('mouseout', function () {
+          d3.select(this).attr('r', 3);
+          chartTip.style.display = 'none';
+        });
+    }
+
 
     // -------------------------------------------------------------------------
     // Mode toggle (single-select)

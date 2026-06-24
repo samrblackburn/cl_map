@@ -212,7 +212,7 @@ def main():
     COL_VAL = "ResultMeasureValue"
     COL_UNIT = "ResultMeasure/MeasureUnitCode"
     COL_DATE = "ActivityStartDate"
-    COL_NAME = "MonitoringLocationName"  # may not be in results; we'll join
+    # COL_NAME = "MonitoringLocationName"  # may not be in results; we'll join
 
     needed = [COL_SITE, COL_VAL, COL_UNIT, COL_DATE]
     for c in needed:
@@ -284,6 +284,17 @@ def main():
         most_recent_idx = dates.idxmax()
         max_idx = vals.idxmax()
 
+        # Build daily-averaged time series (date string → mean value)
+        grp_dated = grp.copy()
+        grp_dated["date_str"] = grp_dated["date"].dt.strftime("%Y-%m-%d")
+        daily = (
+            grp_dated.groupby("date_str", sort=True)["value_mgl"].mean().reset_index()
+        )
+        samples = [
+            {"d": row["date_str"], "v": round(float(row["value_mgl"]), 3)}
+            for _, row in daily.iterrows()
+        ]
+
         return pd.Series(
             {
                 "lat": grp["lat"].iloc[0],
@@ -296,6 +307,7 @@ def main():
                 "mean_value": round(float(vals.mean()), 3),
                 "max_value": round(float(vals.max()), 3),
                 "max_date": grp.loc[max_idx, "date"].strftime("%Y-%m-%d"),
+                "samples": samples,
             }
         )
 
@@ -324,6 +336,9 @@ def main():
             "max_val": row["max_value"],
             "max_date": row["max_date"],
         }
+        # Include time series only for multi-sample sites
+        if int(row["n_samples"]) > 1:
+            record["samples"] = row["samples"]
         records.append(record)
 
     output = {

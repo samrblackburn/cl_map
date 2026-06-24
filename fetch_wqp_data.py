@@ -31,7 +31,7 @@ WQP_RESULT_URL = "https://www.waterqualitydata.us/data/Result/search"
 WQP_STATION_URL = "https://www.waterqualitydata.us/data/Station/search"
 
 PARAMS_BASE = {
-    "statecode": "US:55",  # Wisconsin FIPS
+    "statecode": ["US:27", "US:55"],  # MN, WI FIPS, need to change on line 180 too
     "characteristicName": "Chloride",
     "dataProfile": "resultPhysChem",
     "mimeType": "csv",
@@ -177,7 +177,7 @@ def main():
     # 2. Fetch station (site) data for lat/lon
     # ------------------------------------------------------------------
     station_params = {
-        "statecode": "US:55",
+        "statecode": ["US:27", "US:55"],
         "characteristicName": "Chloride",
         "mimeType": "csv",
         "zip": "no",
@@ -195,7 +195,7 @@ def main():
     # Also drop any row where ActivityIdentifier contains common QC flags
     if "ActivityIdentifier" in results_df.columns:
         qc_pattern = (
-            r"(?i)(blank|replicate|spike|qc|qaqc|dup\b|duplicate|reference material)"
+            r"(?i)(?:blank|replicate|spike|qc|qaqc|dup\b|duplicate|reference material)"
         )
         results_df = results_df[
             ~results_df["ActivityIdentifier"].str.contains(

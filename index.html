@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wisconsin Chloride Concentrations — WQP</title>
+  <title>MN & WI Chloride — WQP</title>
 
   <!-- Leaflet -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
@@ -609,7 +609,7 @@
 
   <header>
     <div class="header-title">
-      <h1>Wisconsin Chloride Concentrations</h1>
+      <h1>Minnesota & Wisconsin Chloride Concentrations</h1>
       <p>EPA Water Quality Portal · Lakes &amp; Rivers · Units: mg/L</p>
     </div>
 
@@ -688,16 +688,13 @@
 
   <script>
     // -------------------------------------------------------------------------
-    // Map init — centered on Wisconsin
+    // Map init — centered between Minnesota and Wisconsin
     // -------------------------------------------------------------------------
     const map = L.map('map', {
-      center: [44.5, -89.9],
+      center: [45.5, -92.5],
       zoom: 7,
-      zoomControl: true,
+      zoomControl: false,
     }).addControl(L.control.zoom({ position: 'topright' }));
-
-    // Remove default zoom (we just re-added it top-right)
-    document.querySelector('.leaflet-top.leaflet-left .leaflet-control-zoom')?.remove();
 
     // 1. Create a custom pane for labels so they sit above markers but don't block clicks
     const labelPane = map.createPane('mapLabels');

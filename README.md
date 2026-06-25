@@ -9,6 +9,7 @@ Interactive map of chloride concentrations in Minnesota & Wisconsin waters, sour
 - **QA/QC removal:** Activity types matching blank/replicate/spike/QC patterns excluded
 - **Unit harmonization:** mg/L, µg/L, meq/L, mmol/L, ppm, ppb all converted to mg/L; unknown units dropped
 - **Aggregation:** Per `MonitoringLocationIdentifier`; most recent/mean/max computed from all valid samples
+- **Cleaning** Remove values below zero or greater than 20,000 mg/L.
 
 ## File structure
 

@@ -230,8 +230,8 @@ def main():
     # Drop rows with no usable value
     n_before = len(df)
     df = df.dropna(subset=["value_mgl"])
-    # Drop physically impossible values (negative or extreme outliers > 500,000 mg/L)
-    df = df[(df["value_mgl"] >= 0) & (df["value_mgl"] <= 500_000)]
+    # Drop physically impossible values (negative or extreme outliers > 50,000 mg/L)
+    df = df[(df["value_mgl"] >= 0) & (df["value_mgl"] <= 50_000)]
     print(
         f"Value harmonization: {n_before:,} → {len(df):,} rows with valid mg/L values."
     )
